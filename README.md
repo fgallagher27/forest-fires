@@ -1,2 +1,2 @@
-# geospatial
-Contains code exploring spatial datasets
+# Geospatial
+:earth_africa: Contains code exploring spatial datasets :earth_africa:
