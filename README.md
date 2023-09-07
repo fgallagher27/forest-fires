@@ -1,2 +1,3 @@
-# Geospatial
-:earth_africa: Contains python code exploring spatial datasets :earth_africa:
+# Forest fires
+
+:fire: The aim of this repo is to investigate the Monitoring Trends in Burn Severity (MTBS) dataset of US wildfires from 1984 - present. 
