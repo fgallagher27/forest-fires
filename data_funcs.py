@@ -1,6 +1,7 @@
-import requests
 import os
+import yaml
 import zipfile
+import requests
 
 def download_zip_from_url(url, file_path):
     """
@@ -59,15 +60,25 @@ def download_data(url, folder, file, extract_location):
         extract_zip(folder, extract_location)
 
 
-def check_inputs(file):
+def check_inputs(folder, file):
     """
     Checks whether appropriate files are downloaded
     """
     # if path to wildfire shp does not exist, source download script
     # else do nothing
-    file_path = os.path.join("data", "inputs", file)
+    file_path = os.path.join(folder, file)
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'The file path "{file_path}" does not exist. Please run data_download.py to download required data')
+    
+
+def load_data_catalogue():
+    """
+    Loads data catalogue
+    """
+    # Load the YAML data from the file
+    with open('data_catalogue.yml', 'r') as file:
+        data_catalogue = yaml.safe_load(file)
+    return data_catalogue
 
 
 def count_nas(df):
@@ -80,9 +91,12 @@ def count_nas(df):
 def filter_df(df, column, values):
     orig = len(df)
     new_df = df[df[column].isin(values)]
-    new = len(new)
+
+    new = len(new_df)
     diff = orig - new
     print(f"Filtering {column} for values in {values} has dropped {diff} rows from the dataframe")
+
+    return new_df
 
 
 def extract_state(df):

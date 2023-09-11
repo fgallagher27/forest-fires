@@ -1,8 +1,10 @@
 # data download script
 import os
-from data_funcs import download_zip_from_url, extract_zip, download_data
+from data_funcs import load_data_catalogue, download_data
 
-mtbs_url = "https://edcintl.cr.usgs.gov/downloads/sciweb1/shared/MTBS_Fire/data/composite_data/burned_area_extent_shapefile/mtbs_perimeter_data.zip"
+data_catalogue = load_data_catalogue()
+
+mtbs_url = data_catalogue['downloads']['wildfires']['url']
 mtbs_folder = os.path.join("data","inputs", "mtbs_wildfires.zip")
 shp_file = "mtbs_perims_DD.shp"
 extract_location = os.path.join("data", "inputs")

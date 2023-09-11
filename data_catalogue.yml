@@ -1,0 +1,17 @@
+# data_catalogue.yml
+
+downloads:
+  wildfires:
+    source:
+    description:
+    url: "https://edcintl.cr.usgs.gov/downloads/sciweb1/shared/MTBS_Fire/data/composite_data/burned_area_extent_shapefile/mtbs_perimeter_data.zip"
+    download_folder: "data/inputs/mtbs_wildfires.zip"
+    extract_location: "data/inputs"
+     
+files:
+  wildfires:
+    input:
+      wildfire_shp:
+        file_name: "mtbs_perims_DD.shp"
+        location: "data/inputs"
+              
