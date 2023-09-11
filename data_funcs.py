@@ -1,3 +1,11 @@
+"""
+This script contains the functions needed to download, check and clean the mtbs wildfires dataset
+It can be imported as a module into the data download and clean scripts
+It contains the following functions:
+
+    * download_zip_from_url 
+"""
+
 import os
 import yaml
 import zipfile
@@ -6,6 +14,13 @@ import requests
 def download_zip_from_url(url, file_path):
     """
     This function downloads a zip file from a url and places into file_path
+
+    Parameters
+    ----------
+    url : str
+        url address of the zip folder to download
+    file_path : str
+        folder path to save the zip file to including the name of the zip
     """
     print("Downloading data...")
     directory = os.path.dirname(file_path)
