@@ -1,4 +1,7 @@
-# data download script
+"""
+This script downloads the required data from the mtbs website and extracts it into a data/inputs sub-directory
+"""
+
 import os
 from data_funcs import load_data_catalogue, download_data
 
