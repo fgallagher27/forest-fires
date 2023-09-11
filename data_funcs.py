@@ -7,8 +7,8 @@ It contains the following functions:
 """
 
 import os
-import yaml
 import zipfile
+import yaml
 import requests
 
 def download_zip_from_url(url, file_path):
@@ -51,7 +51,7 @@ def extract_zip(zip_file_path, extract_location):
 
         with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
             zip_ref.extractall(extract_location)
-        
+
         print(f"Successfully extracted {zip_file_path} to {extract_location}")
 
     except FileNotFoundError as e:
@@ -62,7 +62,8 @@ def extract_zip(zip_file_path, extract_location):
 
 def download_data(url, folder, file, extract_location):
     """
-    This function checks if the data has already been downloaded and if not, downloads and extracts it
+    This function checks if the data has already been downloaded.
+    If it has not, it downloads and extracts it.
     """
     if os.path.exists(os.path.join("data", "inputs", file)):
         print(f"{file} is already downloaded in the subdirectoy 'data'")
@@ -104,6 +105,9 @@ def count_nas(df):
 
 
 def filter_df(df, column, values):
+    """
+    This function filters a df so that column only contains the values in values
+    """
     orig = len(df)
     new_df = df[df[column].isin(values)]
 
