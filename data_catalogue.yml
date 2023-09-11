@@ -1,6 +1,5 @@
 # data_catalogue.yml
 
-[general]
 downloads:
   wildfires:
     source:
