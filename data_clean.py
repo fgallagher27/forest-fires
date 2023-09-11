@@ -1,3 +1,7 @@
+"""
+This script cleans the mtbs wildfire dataset before being analysed
+"""
+
 import pandas as pd
 import geopandas as gpd
 from data_funcs import *
