@@ -1,10 +1,26 @@
-import requests
+"""
+This script contains the functions needed to download, check and clean the mtbs wildfires dataset
+It can be imported as a module into the data download and clean scripts
+It contains the following functions:
+
+    * download_zip_from_url 
+"""
+
 import os
 import zipfile
+import yaml
+import requests
 
 def download_zip_from_url(url, file_path):
     """
     This function downloads a zip file from a url and places into file_path
+
+    Parameters
+    ----------
+    url : str
+        url address of the zip folder to download
+    file_path : str
+        folder path to save the zip file to including the name of the zip
     """
     print("Downloading data...")
     directory = os.path.dirname(file_path)
@@ -35,7 +51,7 @@ def extract_zip(zip_file_path, extract_location):
 
         with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
             zip_ref.extractall(extract_location)
-        
+
         print(f"Successfully extracted {zip_file_path} to {extract_location}")
 
     except FileNotFoundError as e:
@@ -46,7 +62,8 @@ def extract_zip(zip_file_path, extract_location):
 
 def download_data(url, folder, file, extract_location):
     """
-    This function checks if the data has already been downloaded and if not, downloads and extracts it
+    This function checks if the data has already been downloaded.
+    If it has not, it downloads and extracts it.
     """
     if os.path.exists(os.path.join("data", "inputs", file)):
         print(f"{file} is already downloaded in the subdirectoy 'data'")
@@ -59,15 +76,25 @@ def download_data(url, folder, file, extract_location):
         extract_zip(folder, extract_location)
 
 
-def check_inputs(file):
+def check_inputs(folder, file):
     """
     Checks whether appropriate files are downloaded
     """
     # if path to wildfire shp does not exist, source download script
     # else do nothing
-    file_path = os.path.join("data", "inputs", file)
+    file_path = os.path.join(folder, file)
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'The file path "{file_path}" does not exist. Please run data_download.py to download required data')
+    
+
+def load_data_catalogue():
+    """
+    Loads data catalogue
+    """
+    # Load the YAML data from the file
+    with open('data_catalogue.yml', 'r') as file:
+        data_catalogue = yaml.safe_load(file)
+    return data_catalogue
 
 
 def count_nas(df):
@@ -78,11 +105,17 @@ def count_nas(df):
 
 
 def filter_df(df, column, values):
+    """
+    This function filters a df so that column only contains the values in values
+    """
     orig = len(df)
     new_df = df[df[column].isin(values)]
-    new = len(new)
+
+    new = len(new_df)
     diff = orig - new
     print(f"Filtering {column} for values in {values} has dropped {diff} rows from the dataframe")
+
+    return new_df
 
 
 def extract_state(df):
