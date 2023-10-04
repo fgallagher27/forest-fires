@@ -4,23 +4,38 @@ It can be imported as a module into the data download and clean scripts
 It contains the following functions:
 
     * download_zip_from_url 
+    * extract_zi
+    * download_data
+    * check_inputs
+    * load_data_catalogue
+    * count_nas
+    * filter_df
+    * extract_state
+    * calc_area
+    * normalise_values
+    * normalise_cols
+
 """
 
 import os
+import pandas as pd
+import geopandas as gpd
 import zipfile
 import yaml
 import requests
+from typing import List, Union
 
-def download_zip_from_url(url, file_path):
+
+### Download files ----
+
+def download_zip_from_url(url: str, file_path: str):
     """
     This function downloads a zip file from a url and places into file_path
 
-    Parameters
-    ----------
-    url : str
-        url address of the zip folder to download
-    file_path : str
-        folder path to save the zip file to including the name of the zip
+    Args:
+        url (str): url address of the zip folder to download
+        file_path (str): folder path to save the zip file to including the name of the zip
+
     """
     print("Downloading data...")
     directory = os.path.dirname(file_path)
@@ -37,7 +52,7 @@ def download_zip_from_url(url, file_path):
         print(f"Failed to download the file. Status code: {response.status_code}")
 
 
-def extract_zip(zip_file_path, extract_location):
+def extract_zip(zip_file_path: str, extract_location: str):
     """
     This function extracts the contents of a zipfile to extract_location.
     """
@@ -60,13 +75,13 @@ def extract_zip(zip_file_path, extract_location):
         print(f"An error occurred: {str(e)}")
 
 
-def download_data(url, folder, file, extract_location):
+def download_data(url: str, folder: str, file: str, extract_location: str):
     """
     This function checks if the data has already been downloaded.
     If it has not, it downloads and extracts it.
     """
     if os.path.exists(os.path.join("data", "inputs", file)):
-        print(f"{file} is already downloaded in the subdirectoy 'data'")
+        print(f"{file} is already downloaded in the subdirectory 'data'")
     elif os.path.exists(folder):
         print(f"Extracting data from {folder}...")
         extract_zip(folder, extract_location)
@@ -76,7 +91,7 @@ def download_data(url, folder, file, extract_location):
         extract_zip(folder, extract_location)
 
 
-def check_inputs(folder, file):
+def check_inputs(folder: str, file: str):
     """
     Checks whether appropriate files are downloaded
     """
@@ -85,7 +100,9 @@ def check_inputs(folder, file):
     file_path = os.path.join(folder, file)
     if not os.path.exists(file_path):
         raise FileNotFoundError(f'The file path "{file_path}" does not exist. Please run data_download.py to download required data')
-    
+
+
+### Data Catalogue ----
 
 def load_data_catalogue():
     """
@@ -96,15 +113,16 @@ def load_data_catalogue():
         data_catalogue = yaml.safe_load(file)
     return data_catalogue
 
+### Data cleaning ----
 
-def count_nas(df):
+def count_nas(df: pd.DataFrame):
     """
     Counts the number of missing values (NAs) in each column of a dataframe object
     """
     return df.isna().sum()
 
 
-def filter_df(df, column, values):
+def filter_df(df: pd.DataFrame, column: str, values: List[str]):
     """
     This function filters a df so that column only contains the values in values
     """
@@ -118,17 +136,49 @@ def filter_df(df, column, values):
     return new_df
 
 
-def extract_state(df):
+def extract_state(df: Union[pd.DataFrame, gpd.GeoDataFrame]):
     """
     Creates a state column by extracting the leading 2 letter state code from the Event_ID
     """
-    df['state'] = df.Event_ID.str[:1]
+    df['state'] = df.Event_ID.str[:2]
     return df
 
 
-def calc_area(gpd_df):
+def calc_area(gpd_df: gpd.GeoDataFrame):
     """
     Creates an area column on a geopandas dataframe holding the area of each polygon
     """
     gpd_df['area'] = gpd_df['geometry'].area
     return gpd_df
+
+
+def normalise_values(numbers: List[Union[float, int]]):
+    """
+    This function takes in a list of numbers and normalises the data to lie between 0 and 1
+
+    Args:
+        numbers (list): A list of numbers to normalise.
+    
+    Returns:
+        list: list of numbers normalised between 0 and 1
+    """
+    min_val = min(numbers)
+    max_val = max(numbers)
+
+    # avoid division by zero if all numbers are the same
+    if min_val == max_val:
+        return [0.0] * len(numbers)
+    else:
+        return [(x - min_val) / (max_val - min_val) for x in numbers]
+
+
+def normalise_cols(df: pd.DataFrame, cols_to_normalise: List[str]):
+    """
+    This applies normalise values to columns in a dataframe
+    """
+    df_copy = df.copy()
+
+    # Apply the normalize_list function to the specified columns using .applymap()
+    df_copy[cols_to_normalise] = df_copy[cols_to_normalise].map(normalise_values)
+    
+    return df_copy
