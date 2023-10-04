@@ -9,9 +9,8 @@ downloads:
     extract_location: "data/inputs"
      
 files:
-  wildfires:
-    input:
-      wildfire_shp:
-        file_name: "mtbs_perims_DD.shp"
-        location: "data/inputs"
+  input:
+    wildfire_shp:
+      file_name: "mtbs_perims_DD.shp"
+      location: "data/inputs"
               
