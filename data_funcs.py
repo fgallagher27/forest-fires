@@ -75,20 +75,38 @@ def extract_zip(zip_file_path: str, extract_location: str):
         print(f"An error occurred: {str(e)}")
 
 
-def download_data(url: str, folder: str, file: str, extract_location: str):
+# maybe at some point refactor as a module/class structure
+def download_data():
     """
-    This function checks if the data has already been downloaded.
+    This function checks if the required data has already been downloaded.
     If it has not, it downloads and extracts it.
     """
-    if os.path.exists(os.path.join("data", "inputs", file)):
-        print(f"{file} is already downloaded in the subdirectory 'data'")
-    elif os.path.exists(folder):
-        print(f"Extracting data from {folder}...")
-        extract_zip(folder, extract_location)
-    else:
-        print(f"Downloading and extracting data from {url}...")
-        download_zip_from_url(url, folder)
-        extract_zip(folder, extract_location)
+
+    data_catalogue = load_data_catalogue()
+
+    for input in data_catalogue['inputs']:
+
+        print(f"Accessing information for {input} input")
+        catalogue = data_catalogue['inputs'][input]
+        folder_path = catalogue['location']
+        file_name = catalogue['file_name']
+        zip = catalogue['zip_folder']
+        url = catalogue['url']
+        input_path = os.path.join(folder_path, file_name)
+
+        if os.path.exists(input_path):
+            print(f"{file_name} is already downloaded in the subdirectory 'data'")
+        elif os.path.exists(zip):
+            print(f"Extracting data from {folder_path}...")
+            extract_zip(zip, folder_path)
+        elif url is not None:
+            print(f"Downloading and extracting data from {url}...")
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+            download_zip_from_url(url, zip)
+            extract_zip(zip, folder_path)
+        else:
+            raise ValueError("Invalid paths specified in data catalogue")
 
 
 def check_inputs(folder: str, file: str):
@@ -112,6 +130,7 @@ def load_data_catalogue():
     with open('data_catalogue.yml', 'r') as file:
         data_catalogue = yaml.safe_load(file)
     return data_catalogue
+
 
 ### Data cleaning ----
 
